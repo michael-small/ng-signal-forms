@@ -7,7 +7,12 @@ import {
   withErrorComponent,
 } from '@ng-signal-forms';
 import { JsonPipe, NgFor, NgIf } from '@angular/common';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CustomErrorComponent } from '../custom-input-error.component';
 
 @Component({
@@ -26,19 +31,18 @@ import { CustomErrorComponent } from '../custom-input-error.component';
           <label>Age</label>
           <input type="number" ngModel [formField]="form.controls.age" />
         </div>
-      </div>
 
-      <div [formGroup]="reactiveForm">
         <h2>Reactive</h2>
-        <div>
-          <label>Name</label>
-          <input [formControl]="reactiveForm.controls.name" />
-        </div>
-
-        <div>
-          <label>Age</label>
-          <input type="number" [formControl]="reactiveForm.controls.age" />
-        </div>
+        <form [formGroup]="reactiveForm">
+          <div>
+            <label>Name</label>
+            <input [formControl]="reactiveForm.controls.name" />
+          </div>
+          <div>
+            <label>Age</label>
+            <input type="number" [formControl]="reactiveForm.controls.age" />
+          </div>
+        </form>
       </div>
 
       <div>
@@ -101,7 +105,7 @@ export default class BasicFormComponent {
     age: null,
   });
 
-  fb = inject(FormBuilder);
+  fb = inject(NonNullableFormBuilder);
   reactiveForm = this.fb.group<{ name: string; age: number | null }>({
     name: 'Alice',
     age: null,
