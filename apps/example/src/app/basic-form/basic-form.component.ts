@@ -100,16 +100,25 @@ import { CustomErrorComponent } from '../custom-input-error.component';
   providers: [withErrorComponent(CustomErrorComponent)],
 })
 export default class BasicFormComponent {
-  form = createFormGroup<{ name: string; age: number | null }>({
-    name: 'Alice',
-    age: null,
-  });
-
   fb = inject(NonNullableFormBuilder);
-  reactiveForm = this.fb.group<{ name: string; age: number | null }>({
+
+  formsInitialValue = {
     name: 'Alice',
     age: null,
-  });
+  };
+
+  formsManualSetValue = {
+    name: 'Bob',
+    age: 42,
+  };
+
+  form = createFormGroup<{ name: string; age: number | null }>(
+    this.formsInitialValue
+  );
+
+  reactiveForm = this.fb.group<{ name: string; age: number | null }>(
+    this.formsInitialValue
+  );
 
   formChanged = effect(() => {
     console.log('form changed:', this.form.value());
@@ -128,37 +137,16 @@ export default class BasicFormComponent {
     this.reactiveForm.reset();
   }
 
-  // Implemented for now to debug the form group value set function
-  ngOnInit() {
-    // this.form.setFormGroupValue({
-    //   name: 'hi signal form',
-    //   age: 50,
-    // });
-    // this.reactiveForm.setValue({
-    //   name: 'hi reactive form',
-    //   age: 50,
-    // });
-  }
-
   prefill() {
-    // TODO: improve this API to set form groups
-    this.form.controls.age.value.set(42);
-    this.form.controls.name.value.set('Bob');
+    this.form.controls.age.value.set(this.formsManualSetValue['age']);
+    this.form.controls.name.value.set(this.formsManualSetValue['name']);
 
-    this.reactiveForm.controls.age.setValue(42);
-    this.reactiveForm.controls.name.setValue('Bob');
+    this.reactiveForm.controls.age.setValue(this.formsManualSetValue['age']);
+    this.reactiveForm.controls.name.setValue(this.formsManualSetValue['name']);
   }
 
   prefillGroup() {
-    this.form.setFormGroupValue({
-      name: 'Bob',
-      age: 42,
-    });
-    this.reactiveForm.setValue({
-      name: 'Bob',
-      age: 42,
-    });
-
-    console.log(this.reactiveForm);
+    this.form.setFormGroupValue(this.formsManualSetValue);
+    this.reactiveForm.setValue(this.formsManualSetValue);
   }
 }
