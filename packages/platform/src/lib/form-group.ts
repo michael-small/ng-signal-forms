@@ -27,10 +27,10 @@ import {
 export type FormGroup<Fields extends FormGroupCreatorOrSignal = {}> = {
   __type: 'FormGroup';
   value: Signal<UnwrappedFormGroup<Fields>>;
-  controls: Fields extends WritableSignal<FormGroup<infer G>[]> 
-    ? FormGroupFields<Fields> & WritableSignal<FormGroup<G>[]> 
-    : Fields extends WritableSignal<infer F> 
-    ? FormGroupFields<Fields> & WritableSignal<F> 
+  controls: Fields extends WritableSignal<FormGroup<infer G>[]>
+    ? FormGroupFields<Fields> & WritableSignal<FormGroup<G>[]>
+    : Fields extends WritableSignal<infer F>
+    ? FormGroupFields<Fields> & WritableSignal<F>
     : FormGroupFields<Fields>;
   valid: Signal<boolean>;
   state: Signal<ValidationState>;
@@ -44,6 +44,7 @@ export type FormGroup<Fields extends FormGroupCreatorOrSignal = {}> = {
   errorMessage: (errorKey: string) => string | undefined;
   markAllAsTouched: () => void;
   reset: () => void;
+  setFormGroupValue: (value: any | null) => void;
 };
 
 export type FormGroupOptions = {
@@ -138,7 +139,7 @@ export function createFormGroup<FormFields extends FormGroupCreator>(
     }
 
     return 'PRISTINE';
-  })
+  });
   const dirtySignal = computed(() => dirtyStateSignal() === 'DIRTY');
 
   const touchedStateSignal = computed(() => {
@@ -154,7 +155,7 @@ export function createFormGroup<FormFields extends FormGroupCreator>(
     }
 
     return 'UNTOUCHED';
-  })
+  });
   const touchedSignal = computed(() => touchedStateSignal() === 'TOUCHED');
 
   return {
@@ -179,7 +180,8 @@ export function createFormGroup<FormFields extends FormGroupCreator>(
       return myErrors.concat(...childErrors);
     }),
     hasError: (errorKey: string) => !!errorsSignal()[errorKey],
-    errorMessage: (errorKey: string) => errorsArraySignal().find(e => e.key === errorKey)?.message,
+    errorMessage: (errorKey: string) =>
+      errorsArraySignal().find((e) => e.key === errorKey)?.message,
     dirtyState: dirtyStateSignal,
     dirty: dirtySignal,
     touchedState: touchedStateSignal,
@@ -205,7 +207,7 @@ export function createFormGroup<FormFields extends FormGroupCreator>(
         (formFieldsMapOrSignal as WritableSignal<any[]>).set([
           ...initialArrayControls,
         ]);
-        
+
         for (const ctrl of initialArrayControls) {
           ctrl.reset();
         }
@@ -213,6 +215,19 @@ export function createFormGroup<FormFields extends FormGroupCreator>(
       }
       return Object.values(fg).forEach((f) => {
         f.reset();
+      });
+    },
+    setFormGroupValue: (value: any | null) => {
+      const vals = Object.values(value);
+
+      const fg = isSignal(formFieldsMapOrSignal)
+        ? formFieldsMapOrSignal()
+        : formFieldsMapOrSignal;
+
+      // TODO - isArray case?
+
+      return Object.values(fg).forEach((f, index) => {
+        f.value.set(vals[index]);
       });
     },
   };
