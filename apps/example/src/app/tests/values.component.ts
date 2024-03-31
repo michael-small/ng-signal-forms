@@ -2,16 +2,34 @@ import { Component, inject } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import {
   SignalFormBuilder,
+  SignalInputDirective,
   createFormGroup,
   withErrorComponent,
 } from '@ng-signal-forms';
 import { CustomErrorComponent } from '../custom-input-error.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-values-form',
   standalone: true,
-  imports: [JsonPipe],
+  imports: [JsonPipe, SignalInputDirective, FormsModule],
   template: `
+    <div>
+      <div>
+        <label for="">Name</label>
+        <input ngModel [formField]="form.controls.name" aria-label="Name" />
+      </div>
+
+      <div>
+        <label>Age</label>
+        <input
+          type="number"
+          ngModel
+          [formField]="form.controls.age"
+          aria-label="Age"
+        />
+      </div>
+    </div>
     <button (click)="reset()">Reset form</button>
     <button (click)="prefill()">Prefill form</button>
     <p>form.value().name: {{ form.value().name }}</p>
