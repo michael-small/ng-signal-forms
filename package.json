@@ -7,7 +7,7 @@
     "start": "nx serve example --host 0.0.0.0",
     "build": "nx run-many --target=build --all",
     "watch": "nx build --watch --configuration development",
-    "test": "nx test",
+    "test": "nx test example",
     "semantic-release": "semantic-release"
   },
   "dependencies": {
